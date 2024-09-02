@@ -1,10 +1,22 @@
 """
-Feat utility and helper functions for performing statistics. 
+Feat utility and helper functions for performing statistics.
 """
 
 import numpy as np
 import pandas as pd
-from scipy.integrate import simps
+
+
+from packaging.version import Version
+
+import scipy
+
+if Version(scipy.__version__) < Version("1.14.0"):
+    from scipy.integrate import simps as simps_module
+else:
+    from scipy.integrate import simpson as simps_module
+
+
+
 import torch
 from torch.nn.functional import cosine_similarity
 
@@ -61,7 +73,7 @@ def calc_hist_auc(vals, hist_range=None):
         else:
             cross = vals[crossings[i] : crossings[i + 1]]
         if cross:
-            auc = simps(cross)
+            auc = simps_module(cross)
             if auc > 0:
                 pos.append(auc)
             elif auc < 0:
